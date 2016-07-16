@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ArrayList;
 
 import redis.clients.jedis.Jedis;
 
@@ -61,7 +62,18 @@ public class WikiSearch {
 	 */
 	public WikiSearch or(WikiSearch that) {
         // FILL THIS IN!
-		return null;
+        Map<String, Integer> freq = new HashMap<>();
+        for (String url: map.keySet()) {
+        	freq.put(url, map.get(url));
+        }
+        for (String url : that.map.keySet()) {
+    		if (freq.containsKey(url)) {
+    			freq.put(url, map.get(url) + that.map.get(url));
+    		} else {
+    			freq.put(url, that.map.get(url));
+    		}
+        }
+		return new WikiSearch(freq);
 	}
 	
 	/**
@@ -72,7 +84,13 @@ public class WikiSearch {
 	 */
 	public WikiSearch and(WikiSearch that) {
         // FILL THIS IN!
-		return null;
+		Map<String, Integer> freq = new HashMap<>();
+        for (String url: map.keySet()) {
+        	if (that.map.containsKey(url)) {
+        		freq.put(url, map.get(url) + that.map.get(url));
+        	}
+        }
+		return new WikiSearch(freq);
 	}
 	
 	/**
@@ -83,7 +101,13 @@ public class WikiSearch {
 	 */
 	public WikiSearch minus(WikiSearch that) {
         // FILL THIS IN!
-		return null;
+        Map<String, Integer> freq = new HashMap<>();
+        for (String url: map.keySet()) {
+        	if (!that.map.containsKey(url)) {
+        		freq.put(url, map.get(url));
+        	}
+        }
+		return new WikiSearch(freq);
 	}
 	
 	/**
@@ -105,7 +129,16 @@ public class WikiSearch {
 	 */
 	public List<Entry<String, Integer>> sort() {
         // FILL THIS IN!
-		return null;
+        List<Entry<String, Integer>> entries = new ArrayList<>();
+        for (Entry<String, Integer> entry: map.entrySet()) {
+        	entries.add(entry);
+        }
+        Collections.sort(entries, new Comparator<Entry<String, Integer>>() {
+        	public int compare(Entry<String, Integer> e1, Entry<String, Integer> e2) {
+        		return e1.getValue() - e2.getValue();
+        	}
+        });
+		return entries;
 	}
 
 	/**
